@@ -28,21 +28,21 @@ void* consumer(void* arg) {
 }
 
 int main() {
-    int np, nc;
+    int np,nc;
     printf("Enter number of producers and consumers: ");
-    scanf("%d %d", &np, &nc);
+    scanf("%d %d",&np,&nc);
 
-    sem_init(&empty, 0, 5);
-    sem_init(&full, 0, 0);
-    pthread_mutex_init(&mutex, NULL);
+    sem_init(&empty,0,5);
+    sem_init(&full,0,0);
+    pthread_mutex_init(&mutex,NULL);
 
     pthread_t p[np], c[nc];
 
-    for (int i = 0; i < np; i++) pthread_create(&p[i], NULL, producer, (void*)(long)i);
-    for (int i = 0; i < nc; i++) pthread_create(&c[i], NULL, consumer, (void*)(long)i);
+    for (int i=0;i<np;i++)pthread_create(&p[i],NULL,producer,(void*)(long)i);
+    for (int i=0;i<nc;i++)pthread_create(&c[i],NULL,consumer,(void*)(long)i);
 
-    for (int i = 0; i < np; i++) pthread_join(p[i], NULL);
-    for (int i = 0; i < nc; i++) pthread_join(c[i], NULL);
+    for (int i=0;i<np;i++)pthread_join(p[i], NULL);
+    for (int i=0;i<nc;i++)pthread_join(c[i], NULL);
 
     return 0;
 }
