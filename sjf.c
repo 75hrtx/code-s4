@@ -1,50 +1,57 @@
-#include<stdio.h>
-int main() {
-	int bt[20], p[20], wt[20], tat[20], i, j, n, total = 0, pos, temp;
-	float avg_wt, avg_tat;
-	printf("Enter number of process:");
-	scanf("%d",&n);
+#include <stdio.h>
 
-	printf("\n Enter Burst Time:\n");
-	for( i = 0; i < n; i++){
-		printf("p%d:",i+1);
-		scanf("%d",&bt[i]);
-		p[i]=i+1;
+int main() {
+	int n,b[20],w[20],t[20],p[20]; //burst time, waiting time, turnaround time
+	float a=0,at=0;
+	int temp; //avg waiting time, avg turnaround time
+	
+	printf("Enter the total no of processes: ");
+	scanf("%d",&n);
+	
+	printf("Enter the process burst time: ");
+	for(int i=0;i<n;i++) {
+		printf("\np[%d]: ",i+1);
+		scanf("%d",&b[i]);
+		p[i]=i+1; //store process IDs
 	}
-	for( i = 0; i < n; i++){
-		pos = i;
-		for( j = i+1; j < n; j++){
-			if( bt[j] < bt[pos])
-				pos = j;
-		}
-	temp = bt[i];
-	bt[i] = bt[pos];
-	bt[pos] = temp;
-	temp = p[i];
-	p[i] = p[pos];
-	p[pos] = temp;
-	}
-	wt[0] = 0;
-	for( i = 1; i < n; i++){
-		wt[i] = 0;
-		for( j = 0; j < i; j++)
-			{
-				wt[i] += bt[j];
+	
+	//Sort process by burst time(SJF logic)
+	for(int i=0;i<n-1;i++) {
+		for(int j=i+1;j<n;j++) {
+			if(b[i]>b[j]) {
+				//swap burst times
+				temp=b[i];
+				b[i]=b[j];
+				b[j]=temp;
+				//swap process IDs
+				temp=p[i];
+				p[i]=p[j];
+				p[j]=temp;
 			}
-			total += wt[i];
+		
+		}
 	}
-	avg_wt = (float)total / n;
-	total = 0;
-printf("Gantt Chart:\n");
-for(int k=0;k<n;k++)
-{
-printf("p[%d]_",p[k]); }
-	printf("\nProcess\tBurst Time\tcompletion time\tWaiting Time\tTurnaround Time");
-	for( i = 0; i < n; i++){
-		tat[i] = bt[i] + wt[i];
-		total += tat[i];
-		printf("\n p%d\t\t\t %d\t\t\t%d\t\t\t \t%d\t\t\t\t%d",p[i],bt[i],tat[i],wt[i],tat[i]);
+	
+	w[0]=0;
+	for(int i=1;i<n;i++) {
+		w[i]=0;
+		for(int j=0;j<i;j++)
+			w[i]+=b[j];
 	}
-	avg_tat = (float)total / n;
-	printf("\n\nAverage Waiting Time=%f",avg_wt); printf("\nAverage TurnaroundTime=%f\n",avg_tat);
+	printf("Gantt Chart\n");
+	for(int k=0;k<n;k++) {
+		printf("P[%d]__",p[k]);
+	}
+	
+	
+	printf("\nProcess \tBurst time \tCompletion time \tWaiting timr\t \tTat\n");
+	
+	for(int i=0;i<n;i++) {
+		t[i] = b[i]+w[i]; //tat=bt+wt
+		a += w[i];	//awt= awt+wt
+		at += t[i];	//att= at+tt
+		printf("P[%d]\t\t %d \t%d \t%d \t%d\n",i+1,b[i],t[i],w[i],t[i]);
+	}	
+	printf("\nAvg Waiting time: %.2f",a/n);
+	printf("\nAvg Tat time: %.2f",at/n); 
 }
