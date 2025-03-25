@@ -7,8 +7,7 @@ void bf(int b[], int m, int p[], int n) {
         alloc[i]=-1;
 
     for(int i=0;i<n;i++) {
-        int bf=-1;
-
+        int bf=-1;
         for(int j=0;j<m;j++) {
             if(b[j]>=p[i]) {
                 if(bf==-1||b[j]<b[bf])
