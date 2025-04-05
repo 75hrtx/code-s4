@@ -13,7 +13,6 @@ int main() {
 	int n;
 	printf("Enter the total no of process: ");
 	scanf("%d",&n);
-	
 	process*p=(process*)malloc(n*sizeof(process));
 	
 	printf("Enter the burst time and priority: \n");
