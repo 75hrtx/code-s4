@@ -1,60 +1,73 @@
 #include <stdio.h>
+#include <stdlib.h>
+
+typedef struct {
+    int bt;   // burst time
+    int wt;   // waiting time
+    int tat;  // turnaround time
+    int pr;   // priority
+    int pno;  // process number
+} Process;
 
 int main() {
-	int n,b[20],w[20],t[20],pr[20],pi[20]; //burst time, waiting time, turnaround time
-	float a=0,at=0; //avg waiting time, avg turnaround time
-	int temp;
-	
-	printf("Enter the total no of processes: ");
-	scanf("%d",&n);
-	
-	printf("Enter the process burst time: ");
-	for(int i=0;i<n;i++) {
-		printf("p[%d]: ",i+1);
-		scanf("%d",&b[i]);
-		printf("p[%d] Priority: ",i+1);
-		scanf("%d",&pr[i]);
-		pi[i]=i+1;
-	}
-	
-	//sort based on priority
-	for(int i=0;i<n-1;i++) {
-		for(int j=i+1;j<n;j++) {
-			if(pr[i] > pr[j]) {
-				temp=b[i];
-				b[i]=b[j];
-				b[j]=temp;
-				
-				temp=pr[i];
-				pr[i]=pr[j];
-				pr[j]=temp;
-				
-				temp=pi[i];
-				pi[i]=pi[j];
-				pi[j]=temp;
-			}
-		}
-	}
-	
-	w[0]=0;
-	for(int i=1;i<n;i++) {
-		w[i]=0;
-		for(int j=0;j<i;j++)
-			w[i]+=b[j];
-	}
-	printf("Gantt Chart\n");
-	for(int k=0;k<n;k++) {
-		printf("P[%d]__",pi[k]);
-	}
-	
-	printf("\nProcess \tBurst time \tCompletion time \tWaiting timr\t \tTat\n");
-	
-	for(int i=0;i<n;i++) {
-		t[i] = b[i]+w[i]; //tat=bt+wt
-		a += w[i];	//awt= awt+wt
-		at += t[i];	//att= at+tt
-		printf("P[%d]\t\t %d \t%d \t%d \t%d\n",i+1,b[i],t[i],w[i],t[i]);
-	}	
-	printf("\nAvg Waiting time: %.2f",a/n);
-	printf("\nAvg Tat time: %.2f",at/n); 
+    int n;
+    printf("Enter the total no of processes: ");
+    scanf("%d", &n);
+
+    // Dynamically allocate memory for processes
+    Process *p = (Process*)malloc(n * sizeof(Process));
+
+    printf("Enter the Burst Time and Priority:\n");
+    // Loop to read Burst Time and Priority together for each process
+    for (int i = 0; i < n; i++) {
+        printf("Process %d: ", i + 1);
+        scanf("%d %d", &p[i].bt, &p[i].pr);  // Read both burst time and priority on the same line
+        p[i].pno = i + 1;  // Assigning process number
+        p[i].wt = 0;  // Initialize waiting time to 0
+    }
+
+    // Sort processes based on priority (ascending order)
+    for (int i = 0; i < n - 1; i++) {
+        for (int j = i + 1; j < n; j++) {
+            if (p[i].pr > p[j].pr) {
+                Process temp = p[i];
+                p[i] = p[j];
+                p[j] = temp;
+            }
+        }
+    }
+
+    // Calculate waiting time and turnaround time
+    int total_wt = 0, total_tat = 0;
+    p[0].wt = 0; // First process has 0 waiting time
+    for (int i = 1; i < n; i++) {
+        p[i].wt = p[i - 1].wt + p[i - 1].bt;  // Waiting time = previous process' waiting time + burst time
+    }
+
+    // Printing table headers
+    printf("\nProcess\tBurst Time\tWaiting Time\tCompletion Time\tTurnaround Time\n");
+
+    // Printing process details
+    for (int i = 0; i < n; i++) {
+        p[i].tat = p[i].bt + p[i].wt;  // Turnaround time = burst time + waiting time
+        total_wt += p[i].wt;
+        total_tat += p[i].tat;
+        printf("P[%d]\t\t%d\t\t%d\t\t%d\t\t%d\n", p[i].pno, p[i].bt, p[i].wt, p[i].wt + p[i].bt, p[i].tat);
+    }
+
+    // Display Gantt chart
+    printf("\nGantt Chart:\n");
+    for (int i = 0; i < n; i++) {
+        printf("p[%d]__", p[i].pno);
+    }
+    printf("\n");
+
+    // Calculate and display average waiting time and turnaround time
+    printf("\nAverage Waiting Time: %.2f", (float)total_wt / n);
+    printf("\nAverage Turnaround Time: %.2f\n", (float)total_tat / n);
+
+    // Free dynamically allocated memory
+    free(p);
+
+    return 0;
 }
